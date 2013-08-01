@@ -1,5 +1,3 @@
-require_relative './lib/scrapper'
-
 gemspec = Gem::Specification.new do |s|
   s.name              = 'scrapper'
   s.version           = '0.0.1'
