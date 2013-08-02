@@ -5,7 +5,9 @@ module Scrapper
       request = Request.new(select_relevant(urls.flatten))
       @parser = Parser.new
 
-      @responses = request.perform
+      result = request.perform
+      @responses = result[:response]
+      @errors = result[:request_error]
       @urls = scrap_urls
       normalize_urls
 

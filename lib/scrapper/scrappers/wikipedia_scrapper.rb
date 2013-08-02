@@ -1,7 +1,7 @@
 module Scrapper
   class WikipediaScrapper < BaseScrapper
 
-    attr_reader :responses, :urls
+    attr_reader :responses, :urls, :errors
 
     def is_relevant?(u)
       u.to_s == "http://en.wikipedia.org/wiki/Main_Page" || u.to_s =~ /\A\/wiki.*/
