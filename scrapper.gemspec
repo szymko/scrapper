@@ -8,4 +8,8 @@ gemspec = Gem::Specification.new do |s|
   s.homepage          = 'https://github.com/szymko/scrapper'
   s.authors           = ['Szymon Sobański']
   s.email             = "sobanski.s@gmail.com"
+
+  s.add_dependency    'nokogiri', '1.6.0'
+  s.add_dependency    'eventmachine', '1.0.3'
+  s.add_dependency    'em-http-request', '1.1.0'
 end
