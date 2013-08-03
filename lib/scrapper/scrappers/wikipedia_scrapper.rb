@@ -4,7 +4,7 @@ module Scrapper
     attr_reader :responses, :urls, :errors
 
     def is_relevant?(u)
-      u.to_s == "http://en.wikipedia.org/wiki/Main_Page" || u.to_s =~ /\A\/wiki.*/
+      u.to_s =~ /http:\/\/en.wikipedia.org\/wiki\/.*/ || u.to_s =~ /\A\/wiki.*/
     end
 
     def normalize_urls
