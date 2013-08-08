@@ -7,8 +7,8 @@ module Scrapper
     include Scrapper::StringHelper
 
     def initialize(url_list, **opts)
-      @_urls_to_visit = url_list if url_list.is_a? Array
-      @_parallel = opts[:parallel] || 10
+      @urls_to_visit = url_list if url_list.is_a? Array
+      @parallel = opts[:parallel] || 10
     end
 
     def perform
@@ -26,7 +26,7 @@ module Scrapper
 
     def raw_request
       raw_responses = { response: {}, request_error: {}}
-      @_urls_to_visit.each_slice(@_parallel) do |urls|
+      @urls_to_visit.each_slice(@parallel) do |urls|
         raw_responses.merge(async_request(urls)) { |key, oldval, newval| oldval.merge!(newval) }
       end
 

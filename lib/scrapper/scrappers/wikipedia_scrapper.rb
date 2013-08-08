@@ -9,9 +9,14 @@ module Scrapper
 
     def normalize_urls
       @host ||= "http://en.wikipedia.org"
-      @urls.map! do |url|
+      urls.map! do |url|
         url.match(@host) ? url.to_s : @host.to_s + url.to_s
       end
     end
+
+    def urls
+      @urls
+    end
+
   end
 end
