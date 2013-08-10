@@ -39,7 +39,7 @@ module Scrapper
       EventMachine.run do
         multi = EventMachine::MultiRequest.new
 
-        urls.each_with_index { |u, id| multi.add "#{u}".to_sym, EventMachine::HttpRequest.new(u).get }
+        urls.uniq.each_with_index { |u, id| multi.add "#{u}".to_sym, EventMachine::HttpRequest.new(u).get }
 
         multi.callback do
           result[:response] = multi.responses[:callback]

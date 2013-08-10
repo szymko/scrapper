@@ -3,11 +3,11 @@ gemspec = Gem::Specification.new do |s|
   s.version           = '0.0.1'
   s.summary           = 'Simple scrapper'
   s.description       = 'Simple scrapper making web requests, parsing them and extracting urls.'
-  s.files             = Dir.glob("{lib, spec}/**/*")
+  s.files             = Dir.glob("{lib, test}/**/*")
   s.require_path      = 'lib'
   s.homepage          = 'https://github.com/szymko/scrapper'
   s.authors           = ['Szymon Sobański']
-  s.email             = "sobanski.s@gmail.com"
+  s.email             = 'sobanski.s@gmail.com'
 
   s.add_dependency    'nokogiri', '1.6.0'
   s.add_dependency    'eventmachine', '1.0.3'
