@@ -7,6 +7,7 @@ module Scrapper
   require_relative './scrapper/request_error.rb'
   require_relative './scrapper/robots_parser.rb'
   require_relative './scrapper/robots_entry.rb'
-  require_relative './scrapper/scrappers/base_scrapper.rb'
-  require_relative './scrapper/scrappers/wikipedia_scrapper.rb'
+  require_relative './scrapper/robots.rb'
+  require_relative './scrapper/runner.rb'
+  # require_relative './scrapper/scrappers/wikipedia_scrapper.rb'
 end

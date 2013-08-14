@@ -15,6 +15,8 @@ module TestHelper
     stub_request(:any, @urls[1])
       .to_return(:body => "Not Found", :status => 404)
 
+    Scrapper::Robots.any_instance.stubs(:get_robots)
+    Scrapper::Robots.any_instance.stubs(:allowed?).returns(true)
     WebMock.disable_net_connect!
   end
 

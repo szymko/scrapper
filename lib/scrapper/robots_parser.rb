@@ -3,6 +3,8 @@ require 'uri'
 module Scrapper
   class RobotsParser
 
+    include ArrayHelper
+
     GROUP_NAMES = ["Allow", "Disallow"]
 
     def initialize(robots_file)
@@ -11,24 +13,25 @@ module Scrapper
     end
 
     def allowed?(user_agent, url)
+      return true if blank?(@entries)
+      
       best_entry = @entries.max { |e1, e2| e1.user_agent_similarity(user_agent) <=> e2.user_agent_similarity(user_agent) }
 
       if best_entry.user_agent_similarity(user_agent) == 0
-        true
+        return true
       else
-        best_entry.allowed?(url)
+        return best_entry.allowed?(url)
       end
-
     end
 
     private
 
     def parse
       @entries = []
-      without_comments = @robots_file.gsub(/#.*\n|^\n|#.*$/, '')
+      user_agents = @robots_file.gsub(/#.*\n|^\n|#.*$/, '').split(/User-agent:\s*/)
       # the first element is just empty string
-      without_comments.split(/User-agent:\s*/)[1..-1].each do |user_agent_str|
-        @entries << RobotsEntry.new(user_agent_str)
+      unless blank?(user_agents) && blank?(user_agents[1..-1])
+        user_agents[1..-1].each { |u_a| @entries << RobotsEntry.new(u_a) }
       end
     end
   end
