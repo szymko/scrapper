@@ -4,7 +4,7 @@ require 'nokogiri'
 module Scrapper
   module Parser
 
-    def self.parse(response, &block)
+    def self.parse(response)
       parsed = {}
 
       parsed[:body] = Nokogiri.parse(response.body)

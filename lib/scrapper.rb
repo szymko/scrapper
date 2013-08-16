@@ -9,5 +9,4 @@ module Scrapper
   require_relative './scrapper/robots_entry.rb'
   require_relative './scrapper/robots.rb'
   require_relative './scrapper/runner.rb'
-  # require_relative './scrapper/scrappers/wikipedia_scrapper.rb'
 end

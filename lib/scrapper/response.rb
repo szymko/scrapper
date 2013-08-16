@@ -8,7 +8,8 @@ module Scrapper
     end
 
     def uri
-      URI.parse(url)
+      @uri ||= URI.parse(url)
+      @uri
     end
 
     def ==(o)

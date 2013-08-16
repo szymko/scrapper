@@ -1,7 +1,7 @@
 require 'uri'
 
 module Scrapper
-  Error = Struct.new(:url, :details) do
+  RequestError = Struct.new(:url, :details) do
     def uri
       URI.parse(url)
     end

@@ -1,9 +1,11 @@
 require 'pry'
 require 'uri'
-require 'open-uri'
 
 module Scrapper
   class Robots
+
+    include ArrayHelper
+
     def initialize(*urls)
       @robots_files = {}
       get_robots(urls.flatten) unless urls.empty?
@@ -11,28 +13,37 @@ module Scrapper
 
     def allowed?(user_agent, url)
       # binding.pry
-      uri = URI.parse(url.to_s)
-      get_robots_for(uri) if @robots_files[uri.host].nil?
+      uri = uri_from_url(url)
+      get_robots(uri) if @robots_files[uri.host].nil?
 
       @robots_files[uri.host].allowed?(user_agent, url)
     end
 
     def get_robots(urls)
-      urls.each do |u|
-        uri = URI.parse(u.to_s)
-        get_robots_for(uri) unless @robots_files.has_key?(uri.host)
-      end
+      hosts = urls.inject([]) { |hosts, u| hosts << uri_from_url(u).host }
+
+      new_robots = get_robots_for(hosts.uniq - @robots_files.keys)
+      @robots_files.merge!(new_robots)
     end
 
     private
 
-    def get_robots_for(uri)
-      host_url = "#{uri.scheme}://#{uri.host}/robots.txt"
-      robots_file = open(host_url).read
-      @robots_files[uri.host] = RobotsParser.new(robots_file)
-    rescue OpenURI::HTTPError => e
-      # no robots, everything allowed
-      @robots_files[uri.host] = ""
+    def get_robots_for(hosts)
+      return {} if blank?(hosts)
+
+      # well, for now it's only http
+      robots_paths = hosts.map { |h| "http://#{h}/robots.txt" }
+      robots = Request.new(robots_paths).perform
+
+      (robots[:response] + robots[:request_error]).inject ({}) do |h, r|
+        body = (r.is_a? RequestError || r.status_code != 200) ? "" : r.body
+        h[r.uri.host] = RobotsParser.new(body)
+        h
+      end
+    end
+
+    def uri_from_url(url)
+      (url.is_a? URI) ? url : URI.parse(url)
     end
   end
 end
