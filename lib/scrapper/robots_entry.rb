@@ -39,6 +39,8 @@ module Scrapper
     def parse_regule(regule)
       split_regule = regule.split
 
+      return if !split_regule || split_regule.compact.empty?
+
       case split_regule.first.gsub(/\W+/, '')
       when "Allow"
         @allow << split_regule.last
