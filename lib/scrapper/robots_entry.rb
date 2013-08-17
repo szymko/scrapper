@@ -15,9 +15,9 @@ module Scrapper
       uri_path = URI.parse(url).path
 
       if !@allow.empty?
-        @allow.find { |u| uri_path =~ Regexp.compile(u) } ? true : false
+        @allow.find { |u| uri_path =~ Regexp.compile(escape_regule(u)) } ? true : false
       else
-        @disallow.find { |u| uri_path =~ Regexp.compile(u) } ? false : true
+        @disallow.find { |u| uri_path =~ Regexp.compile(escape_regule(u)) } ? false : true
       end
     end
 
@@ -45,6 +45,12 @@ module Scrapper
       when "Disallow"
         @disallow << split_regule.last
       end
+    end
+
+    def escape_regule(u)
+      parts = u.split('*')
+      parts.map! { |p| Regexp.escape(p) }
+      parts.join('.*')
     end
   end
 end

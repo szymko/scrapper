@@ -20,8 +20,8 @@ module Scrapper
     end
 
     def get_robots(urls)
+      # binding.pry
       hosts = urls.inject([]) { |hosts, u| hosts << uri_from_url(u).host }
-
       new_robots = get_robots_for(hosts.uniq - @robots_files.keys)
       @robots_files.merge!(new_robots)
     end

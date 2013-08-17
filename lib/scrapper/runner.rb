@@ -9,7 +9,7 @@ module Scrapper
     end
 
     def scrap(*urls, &block)
-      relevant_urls = select_relevant(urls, &block)
+      relevant_urls = select_relevant(urls.flatten, &block)
       request = Request.new(relevant_urls, parallel: @async_req_no)
 
       @result = request.perform
@@ -39,7 +39,7 @@ module Scrapper
     def select_relevant(urls, &block)
       @robots ||= Robots.new
       @robots.get_robots(urls)
-      urls.flatten.select { |u| @robots.allowed?(@user_agent, u) && block.call(u) }
+      urls.select { |u| @robots.allowed?(@user_agent, u) && block.call(u) }
     end
 
     def move_erroneous_responses(erroneous_responses)
