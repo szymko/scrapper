@@ -12,7 +12,6 @@ module Scrapper
     end
 
     def allowed?(user_agent, url)
-      # binding.pry
       uri = uri_from_url(url)
       get_robots(uri) if @robots_files[uri.host].nil?
 
@@ -20,9 +19,10 @@ module Scrapper
     end
 
     def get_robots(urls)
-      # binding.pry
+      urls = [urls] unless urls.is_a? Array
       hosts = urls.inject([]) { |hosts, u| hosts << uri_from_url(u).host }
       new_robots = get_robots_for(hosts.uniq - @robots_files.keys)
+
       @robots_files.merge!(new_robots)
     end
 
