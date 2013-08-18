@@ -15,6 +15,12 @@ module Scrapper
       uri = uri_from_url(url)
       get_robots(uri) if @robots_files[uri.host].nil?
 
+      # It looks like Request(and em-http-request) returns an empty array in some situations
+      # (like connection reset by peer). Then get_robots_for returns empty hash and @robots_files stays unchanged.
+      # The additional check is essential to prevent asking Robots#allowed? on nil.
+
+      for_not_responding(uri) if @robots_files[uri.host].nil?
+
       @robots_files[uri.host].allowed?(user_agent, url)
     end
 
@@ -44,6 +50,10 @@ module Scrapper
 
     def uri_from_url(url)
       (url.is_a? URI) ? url : URI.parse(url)
+    end
+
+    def for_not_responding(uri)
+      @robots_files[uri.host] = RobotsParser.new("")
     end
   end
 end
