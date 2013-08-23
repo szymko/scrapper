@@ -1,9 +1,10 @@
-require 'uri'
+require 'pry'
 
 module Scrapper
   class RobotsEntry
 
     include ArrayHelper
+    include UriHelper
 
     def initialize(robots_section)
       @allow = []
@@ -12,9 +13,10 @@ module Scrapper
     end
 
     def allowed?(url)
-      uri_path = URI.parse(url).path
+      uri_path = uri_from_url(url).path
 
       if !@allow.empty?
+      # binding.pry
         @allow.find { |u| uri_path =~ Regexp.compile(escape_regule(u)) } ? true : false
       else
         @disallow.find { |u| uri_path =~ Regexp.compile(escape_regule(u)) } ? false : true
@@ -52,7 +54,17 @@ module Scrapper
     def escape_regule(u)
       parts = u.split('*')
       parts.map! { |p| Regexp.escape(p) }
-      parts.join('.*')
+
+      rule = parts.join('[^\/]+')
+      regex_template(rule)
+    end
+
+    def regex_template(rule)
+      if rule[-1,1] == "/"
+        "\\A#{rule}"
+      else
+        "\\A#{rule}\\z"
+      end
     end
   end
 end

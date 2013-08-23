@@ -1,5 +1,3 @@
-require 'uri'
-
 module Scrapper
   class RobotsParser
 
@@ -7,9 +5,11 @@ module Scrapper
 
     GROUP_NAMES = ["Allow", "Disallow"]
 
+    attr_reader :raw
+
     def initialize(robots_file)
-      @robots_file = robots_file
-      parse
+      @raw = robots_file
+      # parse
     end
 
     def allowed?(user_agent, url)
@@ -24,15 +24,17 @@ module Scrapper
       end
     end
 
-    private
+    # private
 
     def parse
       @entries = []
-      user_agents = @robots_file.gsub(/#.*\n|^\n|#.*$/, '').split(/User-agent:\s*/)
+      user_agents = @raw.gsub(/#.*\n|^\n|#.*$/, '').split(/User-agent:\s*/)
       # the first element is just empty string
       unless blank?(user_agents) && blank?(user_agents[1..-1])
         user_agents[1..-1].each { |u_a| @entries << RobotsEntry.new(u_a) }
       end
+
+      self
     end
   end
 end

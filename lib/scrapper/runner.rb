@@ -37,9 +37,9 @@ module Scrapper
     end
 
     def select_relevant(urls, &block)
-      @robots ||= Robots.new
-      @robots.get_robots(urls)
-      urls.select { |u| @robots.allowed?(@user_agent, u) && block.call(u) }
+      # @robots ||= Robots.new
+      # @robots.get_robots(urls)
+      urls.select { |u| block.call(u) } #@robots.allowed?(@user_agent, u) &&
     end
 
     def move_erroneous_responses(erroneous_responses)

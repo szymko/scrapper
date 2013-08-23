@@ -4,7 +4,7 @@ require 'em-http-request'
 module Scrapper
   class Request
 
-    include Scrapper::StringHelper
+    include StringHelper
 
     def initialize(url_list, **opts)
       @urls_to_visit = url_list if url_list.is_a? Array

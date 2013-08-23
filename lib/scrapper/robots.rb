@@ -1,59 +1,70 @@
-require 'pry'
-require 'uri'
-
 module Scrapper
   class Robots
 
+    include RobotsCore
     include ArrayHelper
+    include UriHelper
 
-    def initialize(*urls)
-      @robots_files = {}
-      get_robots(urls.flatten) unless urls.empty?
+    def initialize
+      @files = {}
     end
 
-    def allowed?(user_agent, url)
-      uri = uri_from_url(url)
-      get_robots(uri) if @robots_files[uri.host].nil?
+    # Parse robots from hash without hitting the network.
+    def build(host_file_hash)
+      @files = {}
+      add(host_file_hash)
+    end
 
-      # It looks like Request(and em-http-request) returns an empty array in some situations
-      # (like connection reset by peer). Then get_robots_for returns empty hash and @robots_files stays unchanged.
-      # The additional check is essential to prevent asking Robots#allowed? on nil.
+    def add(host_file_hash)
+      raise ArgumentError unless host_hash.is_a?(Hash)
+      add_from_hash(host_file_hash)
+      self
+    end
 
-      for_not_responding(uri) if @robots_files[uri.host].nil?
+    # Hit the network and parse.
+    def get(*urls)
+      get_robots(urls.flatten.uniq)
+      self
+    end
 
-      @robots_files[uri.host].allowed?(user_agent, url)
+    def get_raw(*urls)
+      get_robots_for(urls.flatten.uniq)
+      self
     end
 
     def get_robots(urls)
       urls = [urls] unless urls.is_a? Array
       hosts = urls.inject([]) { |hosts, u| hosts << uri_from_url(u).host }
-      new_robots = get_robots_for(hosts.uniq - @robots_files.keys)
+      new_robots = get_robots_for(hosts.uniq - @files.keys) { |b| RobotsParser.new(b).parse }
 
-      @robots_files.merge!(new_robots)
+      @files.merge!(new_robots)
     end
 
     private
 
-    def get_robots_for(hosts)
-      return {} if blank?(hosts)
+    def add_from_hash(host_file_hash)
+      (host_file_hash.keys - @files.keys).each do |host|
+        next if blank?(host)
+        @files[host] = RobotsParser.new(host_file_hash[host]).parse
+      end
+    end
 
-      # well, for now it's only http
-      robots_paths = hosts.map { |h| "http://#{h}/robots.txt" }
-      robots = Request.new(robots_paths).perform
+    def get_robots_for(hosts)
+      robots = build_robots_request(hosts)
 
       (robots[:response] + robots[:request_error]).inject ({}) do |h, r|
         body = (r.is_a? RequestError || r.status_code != 200) ? "" : r.body
-        h[r.uri.host] = RobotsParser.new(body)
+        h[r.uri.host] = (block_given? ? yield(body) : body)
         h
       end
     end
 
-    def uri_from_url(url)
-      (url.is_a? URI) ? url : URI.parse(url)
-    end
+    def build_robots_request(hosts)
+      return {} if blank?(hosts)
 
-    def for_not_responding(uri)
-      @robots_files[uri.host] = RobotsParser.new("")
+      # well, for now it's only http
+      robots_paths = hosts.map { |h| "http://#{h}/robots.txt" }
+      Request.new(robots_paths).perform
     end
   end
 end
