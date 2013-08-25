@@ -24,7 +24,9 @@ module Scrapper
       end
     end
 
-    # private
+    def parsed?
+      ! @parsed.nil?
+    end
 
     def parse
       @entries = []
@@ -33,6 +35,7 @@ module Scrapper
       unless blank?(user_agents) && blank?(user_agents[1..-1])
         user_agents[1..-1].each { |u_a| @entries << RobotsEntry.new(u_a) }
       end
+      @parsed = true
 
       self
     end

@@ -22,22 +22,16 @@ module Scrapper
     end
 
     # Hit the network and parse.
-    def get(*urls)
-      get_robots(urls.flatten.uniq)
-      self
-    end
+    def get(urls, opts = {})
+      hosts = urls.inject([]) { |hosts, u| hosts << uri_from_url(u).host }.uniq
 
-    def get_raw(*urls)
-      get_robots_for(urls.flatten.uniq)
-      self
-    end
-
-    def get_robots(urls)
-      urls = [urls] unless urls.is_a? Array
-      hosts = urls.inject([]) { |hosts, u| hosts << uri_from_url(u).host }
-      new_robots = get_robots_for(hosts.uniq - @files.keys) { |b| RobotsParser.new(b).parse }
+      new_robots = get_robots_for(hosts - @files.keys) do |h|
+        p = RobotsParser.new(h)
+        p.parse unless opts[:raw]
+      end
 
       @files.merge!(new_robots)
+      self
     end
 
     private

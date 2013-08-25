@@ -24,5 +24,10 @@ module Scrapper
 
       raw_files
     end
+
+    def parse
+      @files.each { |host, file| file.parse unless file.parsed? }
+    end
+
   end
 end

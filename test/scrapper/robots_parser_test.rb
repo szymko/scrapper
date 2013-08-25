@@ -26,5 +26,11 @@ class RobotsParserTest < MiniTest::Unit::TestCase
     assert @robots_parser.allowed?(agent2, "/hidden")
   end
 
+  def test_it_records_parsing
+    another_parser = Scrapper::RobotsParser.new(@robots_file)
+
+    assert @robots_parser.parsed?
+    refute another_parser.parsed?
+  end
 
 end

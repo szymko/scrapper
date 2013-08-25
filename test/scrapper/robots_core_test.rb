@@ -34,4 +34,12 @@ class RobotsCoreTest < MiniTest::Unit::TestCase
     assert_equal ["en.wikipedia.org", "www.google.pl"], raw.keys
     assert_equal ["know", "ledge"], raw.values
   end
+
+  def test_it_parses_raw_files
+    Scrapper::RobotsParser.any_instance.stubs(:parsed?).returns(true, false)
+    @files["en.wikipedia.org"].expects(:parse).never
+    @files["www.google.pl"].expects(:parse)
+
+    parse
+  end
 end
