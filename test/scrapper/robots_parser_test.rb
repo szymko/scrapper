@@ -14,7 +14,7 @@ class RobotsParserTest < MiniTest::Unit::TestCase
       Allow: /
     ROBOTS
 
-    @robots_parser = Scrapper::RobotsParser.new(@robots_file)
+    @robots_parser = Scrapper::RobotsParser.new(@robots_file).parse
   end
 
   def test_it_allows_urls_according_to_robots_txt

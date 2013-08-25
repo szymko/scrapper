@@ -16,7 +16,7 @@ module Scrapper
     end
 
     def add(host_file_hash)
-      raise ArgumentError unless host_hash.is_a?(Hash)
+      raise ArgumentError unless host_file_hash.is_a?(Hash)
       add_from_hash(host_file_hash)
       self
     end

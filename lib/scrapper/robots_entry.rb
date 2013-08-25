@@ -1,5 +1,3 @@
-require 'pry'
-
 module Scrapper
   class RobotsEntry
 
@@ -24,8 +22,8 @@ module Scrapper
     end
 
     def user_agent_similarity(agent_string)
-      regexp_agent = Regexp.compile(@user_agent.gsub('*', '.'))
-      (agent_string =~ regexp_agent) ? @user_agent.length : 0
+      regexp_agent = Regexp.compile("\\A#{@user_agent.gsub('*', '.*')}\\z")
+      (agent_string =~ regexp_agent) ? @user_agent.gsub(/\*/, '').length : 0
     end
 
     private
@@ -34,7 +32,7 @@ module Scrapper
       raise ArgumentError unless section.is_a? String
 
       transformed_section = section.strip.split(/\n/).map(&:strip)
-      @user_agent = transformed_section[0]
+      @user_agent = transformed_section[0].split.last.gsub(/\s+/, '')
       transformed_section[1..-1].each { |r| parse_regule(r) }
     end
 
