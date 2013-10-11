@@ -1,5 +1,5 @@
-module Scrapper
-  class RobotsEntry
+module Robots
+  class Rulebook
 
     include ArrayHelper
     include UriHelper
@@ -13,17 +13,16 @@ module Scrapper
     def allowed?(url)
       uri_path = uri_from_url(url).path
 
-      if !@allow.empty?
-      # binding.pry
-        @allow.find { |u| uri_path =~ Regexp.compile(escape_regule(u)) } ? true : false
+      if @allow.empty?
+        !any_path?(@dissalow, uri_path)
       else
-        @disallow.find { |u| uri_path =~ Regexp.compile(escape_regule(u)) } ? false : true
+        any_path?(@allow, uri_path)
       end
     end
 
     def user_agent_similarity(agent_string)
-      regexp_agent = Regexp.compile("\\A#{@user_agent.gsub('*', '.*')}\\z")
-      (agent_string =~ regexp_agent) ? @user_agent.gsub(/\*/, '').length : 0
+      agent_pattern = Regexp.compile("\\A#{@user_agent.gsub('*', '.*')}\\z")
+      (agent_string =~ agent_pattern) ?  : 0
     end
 
     private
@@ -64,5 +63,37 @@ module Scrapper
         "\\A#{rule}\\z"
       end
     end
+
+    def any_path?(permission_list, uri_path)
+      permission_lists.any? { |u| uri_path =~ Regexp.compile(escape_regule(u)) }
+    end
+
+    def agent_score
+      @user_agent.gsub(/\*/, '').length
+    end
+
+    def allowed?(entries, user_agent, url)
+      return true if blank?(@entries)
+
+      best_entry = @entries.max { |e1, e2| e1.user_agent_similarity(user_agent) <=> e2.user_agent_similarity(user_agent) }
+
+      if best_entry.user_agent_similarity(user_agent) == 0
+        return true
+      else
+        return best_entry.allowed?(url)
+      end
+    end
   end
 end
+
+      # def allowed?(user_agent, url)
+      #   return true if blank?(@entries)
+
+      #   best_entry = @entries.max { |e1, e2| e1.user_agent_similarity(user_agent) <=> e2.user_agent_similarity(user_agent) }
+
+      #   if best_entry.user_agent_similarity(user_agent) == 0
+      #     return true
+      #   else
+      #     return best_entry.allowed?(url)
+      #   end
+      # end

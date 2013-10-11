@@ -10,7 +10,7 @@ class BaseScrapperTest < MiniTest::Unit::TestCase
 
     @mock_resp = { response: mock_responses, request_error: [] }
     @mock_parsed = { urls: ["http://www.foo.bar/", "https://bar.baz/snafu"], body: "Hello kids!" }
-    
+
     Scrapper::Request.any_instance.stubs(:perform).returns(@mock_resp)
     Scrapper::Parser.stubs(:parse).returns(@mock_parsed).raises(Nokogiri::XML::SyntaxError)
   end

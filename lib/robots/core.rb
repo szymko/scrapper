@@ -1,5 +1,5 @@
-module Scrapper
-  module RobotsCore
+module Robots
+  module Core
 
     include UriHelper
 

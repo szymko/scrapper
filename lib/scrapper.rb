@@ -13,14 +13,6 @@ module Scrapper
   require_relative './scrapper/parser'
   require_relative './scrapper/request_error'
 
-  # robots
-  require_relative './scrapper/robots_parser'
-  require_relative './scrapper/robots_entry'
-  require_relative './scrapper/robots_core'
-
-  # robots interface
-  require_relative './scrapper/robots'
-
   # scrapping interface
   require_relative './scrapper/runner'
 end

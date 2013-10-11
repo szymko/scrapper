@@ -5,7 +5,7 @@ class RobotsCoreTest < MiniTest::Unit::TestCase
   include Scrapper::RobotsCore
 
   def setup
-    @files = { 
+    @files = {
       "en.wikipedia.org" => Scrapper::RobotsParser.new("know"),
       "www.google.pl" => Scrapper::RobotsParser.new("ledge")
     }
