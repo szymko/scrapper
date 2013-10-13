@@ -4,6 +4,7 @@ require 'webmock/minitest'
 require 'mocha/setup'
 
 require_relative '../lib/scrapper'
+require_relative '../lib/robots'
 require_relative './mock'
 
 module TestHelper
@@ -16,6 +17,10 @@ module TestHelper
       .to_return(:body => "Not Found", :status => 404)
 
     WebMock.disable_net_connect!
+  end
+
+  def open_robots_file(file_path = './test/files/robots.txt')
+    File.new(file_path, 'r').to_s
   end
 
   def mock_responses

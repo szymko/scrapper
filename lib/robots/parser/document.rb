@@ -1,25 +1,18 @@
 module Robots
   module Parser
     class Document
-      include ArrayHelper
+      include Scrapper::ArrayHelper
 
-      def initialize(robots_file)
-        @raw = robots_file
-      end
+      attr_accessor :raw
 
-      def parse
+      def parse(file: "", parser: Robots::Parser::Section.new())
+        @raw = file
+
         # shift, because first el is an empty string
         section_list = clean_document().split(/User-agent:\s*/).shift()
-        parsed_list = []
+        parsed_list = parse_each(section_list, parser)
 
-        unless blank?(section_list)
-          section_list.each do |raw_section|
-            section_parser = Robots::Parser::Section.new(raw_section)
-            parsed_list << section_parser.parse()
-          end
-        end
-
-        Robots::Rulebook.new(parsed_list)
+        Robots::Document.new(parsed_list)
       end
 
       private
@@ -27,6 +20,16 @@ module Robots
       def clean_document()
         # remove comments and blank lines
         @raw.gsub(/#.*\n|^\n|#.*$/, '')
+      end
+
+      def parse_each(section_list, parser)
+        if blank?(section_list)
+          []
+        else
+          section_list.reduce([]) do |parsed_list, raw_section|
+            parsed_list << parser.parse(section: raw_section)
+          end
+        end
       end
 
     end

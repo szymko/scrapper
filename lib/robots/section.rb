@@ -1,10 +1,6 @@
 module Robots
   class Section
 
-    include ArrayHelper
-    include UriHelper
-
-
     def initialize(user_agent, rule_list)
       @user_agent = user_agnet
       @rule_list = rule_list

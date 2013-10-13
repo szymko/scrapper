@@ -2,18 +2,15 @@ module Robots
   module Parser
     class Section
 
-      attr_reader :user_agent, :rules
+      attr_reader :user_agent
 
-      def initialize(raw_section)
-        @raw = raw_section
-      end
-
-      def parse()
+      def parse(robots_section: "", parser: Robots::Parser::Rule.new())
+        @raw = robots_section
         parsed = {}
 
-        section = clean_section()
+        clean = clean_section()
         user_agent = Robots::Parser::UserAgent.new(extract_user_agent(section))
-        rule_list = extract_rules(section)
+        rule_list = extract_rules(section, parser)
 
         Robots::Section.new(user_agent, rule_list)
       end
@@ -28,10 +25,9 @@ module Robots
         section.first.split.last.gsub(/\s+/, '')
       end
 
-      def extract_rules(section)
+      def extract_rules(section, parser)
         section[1..-1].reduce([]) do |rule_list, raw_rule|
-          rule_parser = Parser::Rule.new(raw_rule)
-          rule_list << rule_parser.parse()
+          rule_list << parser.parse(rule: raw_rule)
         end
       end
     end

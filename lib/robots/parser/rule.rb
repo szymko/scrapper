@@ -2,13 +2,14 @@ module Robots
   module Parser
     class Rule
 
-      def initialize(raw_rule)
-        @raw = raw_rule
-      end
+      attr_accessor :raw
 
-      def parse
-        rule_list = @raw.split
+      def parse(rule: "")
+        @raw = rule
+
+        rule_list = @raw.split()
         return if !rule_list || rule_list.compact.empty?
+
         permission_type = extract_permission_type(rule_list)
         body = rule_list[1]
 

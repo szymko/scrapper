@@ -1,10 +1,9 @@
 module Robots
   class Rule
 
-    include ArrayHelper
-    include UriHelper
+    include Scrapper::UriHelper
 
-    attr_reader :permission_type., :body
+    attr_reader :permission_type, :body
 
     def initialize(permission_type, body)
       @permission_type = extract_type(permission_type)
@@ -18,7 +17,7 @@ module Robots
       regex_rule = Regexp.compile(escape(@body))
 
       if @permission_type == :allow
-        !! uri_path =~ regex_rule
+        uri_path =~ regex_rule
       else
         ! uri_path =~ regex_rule
       end
@@ -39,11 +38,7 @@ module Robots
     end
 
     def template(preprocessed_body)
-      if preprocessed_body[-1] == "/"
-        "\\A#{preprocessed_body}"
-      else
-        "\\A#{preprocessed_body}\\z"
-      end
+      "\\A#{preprocessed_body}#{(preprocessed_body[-1] == "/") ? "" : "\\z"}"
     end
   end
 end
