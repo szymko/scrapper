@@ -1,22 +1,27 @@
 module Robots
   class Rule
 
+    PERMISSION_TYPE = { "Allow" => :allow, "Disallow" => :disallow }
+
     include Scrapper::UriHelper
+    include Scrapper::StringHelper
 
-    attr_reader :permission_type, :body
+    attr_reader :type, :body
 
-    def initialize(permission_type, body)
-      @permission_type = extract_type(permission_type)
+    def initialize(rule_line)
+      type, body = extract(rule_line)
+
+      @type = PERMISSION_TYPE[type]
       @body = body
     end
 
     def allowed?(url)
       uri_path = uri_from_url(url).path
 
-      return true if @body.nil?
+      return true if blank?(@body)
       regex_rule = Regexp.compile(escape(@body))
 
-      if @permission_type == :allow
+      if @type == :allow
         uri_path =~ regex_rule
       else
         ! uri_path =~ regex_rule
@@ -25,20 +30,22 @@ module Robots
 
     private
 
-    def extract_type(permission_type)
-      PERMISSION_TYPE[permission_type]
-    end
-
     def escape(body)
       literal_list = body.split('*')
       literal_list.map! { |el| Regexp.escape(el) }
 
-      preprocessed_body = parts.join('[^\/]+')
+      preprocessed_body = literal_list.join('[^\/]+')
       template(preprocessed_body)
     end
 
     def template(preprocessed_body)
       "\\A#{preprocessed_body}#{(preprocessed_body[-1] == "/") ? "" : "\\z"}"
+    end
+
+    def extract(rule_line)
+      type = rule_line[/Allow|Disallow/]
+      body = rule_line[/(?<=Allow:|Disallow:).*$/].strip
+      [type, body]
     end
   end
 end

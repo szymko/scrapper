@@ -1,13 +1,13 @@
 module Robots
   class UserAgent
 
-    def initialize(name)
-      @name = name
+    def initialize(user_agent_line)
+      @name = extract(user_agent_line)
     end
 
-    def silmilarity(another_name)
+    def similarity(another_name)
       agent_pattern = name_to_regexp()
-      (agent_string =~ agent_pattern) ? similarity_score : 0
+      (another_name =~ agent_pattern) ? similarity_score : 0
     end
 
     private
@@ -17,7 +17,11 @@ module Robots
     end
 
     def similarity_score
-      @user_agent.gsub(/\*/, '').length
+      @name.length
+    end
+
+    def extract(user_agent_line)
+      user_agent_line.gsub(/User-agent:\s+/, '').strip
     end
 
   end
