@@ -14,5 +14,5 @@ module Scrapper
   require_relative './scrapper/request_error'
 
   # scrapping interface
-  require_relative './scrapper/runner'
+  require_relative './scrapper/crawler'
 end
