@@ -6,34 +6,36 @@ module Scrapper
 
     include StringHelper
 
-    def initialize(url_list, **opts)
-      @urls_to_visit = url_list if url_list.is_a? Array
+    def initialize(*url_list, **opts)
+      @urls = *url_list.flatten
       @parallel = opts[:parallel] || 10
     end
 
-    def perform
-      raw_responses = raw_request
+    def perform()
+      result = get()
+      responses = {}
 
-      response = {}
-      raw_responses.each do |key, value|
-        response[key] = value.inject([]) do |data, url_data|
-          data << Scrapper.const_get(camel_case(key.to_s)).new(url_data[0].to_s, url_data[1])
+      result.each do |klass, body|
+        responses[klass] = body.inject([]) do |data, url_data|
+          data << Scrapper.const_get(camel_case(klass.to_s)).new(url_data[0].to_s, url_data[1])
         end
       end
 
-      response
+      responses
     end
 
-    def raw_request
-      raw_responses = { response: {}, request_error: {}}
-      @urls_to_visit.each_slice(@parallel) do |urls|
-        raw_responses.merge(async_request(urls)) { |key, oldval, newval| oldval.merge!(newval) }
+    private
+
+    def get()
+      responses = { response: {}, request_error: {}}
+      @urls.each_slice(@parallel) do |urls|
+        responses.merge(get_async(urls)) { |key, oldval, newval| oldval.merge!(newval) }
       end
 
-      raw_responses
+      responses
     end
 
-    def async_request(urls)
+    def get_async(urls)
       result = {}
 
       EventMachine.run do
@@ -43,7 +45,7 @@ module Scrapper
 
         multi.callback do
           result[:response] = multi.responses[:callback]
-          result[:error] = multi.responses[:errback]
+          result[:request_error] = multi.responses[:errback]
           EventMachine.stop
         end
       end

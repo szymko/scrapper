@@ -16,11 +16,18 @@ module TestHelper
     stub_request(:any, @urls[1])
       .to_return(:body => "Not Found", :status => 404)
 
-    stub_request(:get, "#{@urls[0]}robots.txt")
+    stub_request(:any, "#{@urls[0]}robots.txt")
       .to_return(:status => 200, :body => "hello")
 
-    stub_request(:get, "#{@urls[1]}/robots.txt")
+    stub_request(:any, "#{@urls[1]}/robots.txt")
       .to_return(:status => 404, :body => "")
+
+    WebMock.disable_net_connect!
+  end
+
+  def setup_timeout_request
+    @timeout_url = "http://www.timeout.pl/"
+    stub_request(:any, @timeout_url).to_timeout
 
     WebMock.disable_net_connect!
   end
