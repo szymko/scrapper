@@ -16,11 +16,17 @@ module TestHelper
     stub_request(:any, @urls[1])
       .to_return(:body => "Not Found", :status => 404)
 
+    stub_request(:get, "#{@urls[0]}robots.txt")
+      .to_return(:status => 200, :body => "hello")
+
+    stub_request(:get, "#{@urls[1]}/robots.txt")
+      .to_return(:status => 404, :body => "")
+
     WebMock.disable_net_connect!
   end
 
-  def open_robots_file(file_path = './test/files/robots.txt')
-    File.new(file_path, 'r').to_s
+  def open_file(file_name = 'robots.txt')
+    File.new("./test/files/#{file_name}", "r").read
   end
 
   def mock_responses

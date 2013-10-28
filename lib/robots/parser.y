@@ -15,7 +15,6 @@ rule
   agent
     : base_agent rules
     | base_agent
-    | base_agent
     ;
 
   base_agent
@@ -35,7 +34,7 @@ end
   end
 
   def next_token()
-    @tokenizer.next_token
+    @tokenizer.next_token()
   end
 
   def parse()

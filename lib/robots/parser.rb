@@ -18,11 +18,11 @@ module Robots
     super()
   end
 
-  def next_token
-    @tokenizer.next_token
+  def next_token()
+    @tokenizer.next_token()
   end
 
-  def parse
+  def parse()
     do_parse
     @handler
   end
@@ -37,11 +37,10 @@ racc_reduce_table = [
  1, 7, :_reduce_none,
  2, 6, :_reduce_none,
  1, 6, :_reduce_none,
- 1, 6, :_reduce_none,
- 1, 9, :_reduce_8,
- 1, 8, :_reduce_9 ]
+ 1, 9, :_reduce_7,
+ 1, 8, :_reduce_8 ]
 
-racc_reduce_n = 10
+racc_reduce_n = 9
 
 racc_shift_n = 12
 
@@ -56,7 +55,7 @@ racc_action_pointer = [
    nil,   nil ]
 
 racc_action_default = [
-   -10,    -8,   -10,    -2,    -6,   -10,    -1,    -9,    -5,    -4,
+    -9,    -7,    -9,    -2,    -6,    -9,    -1,    -8,    -5,    -4,
     12,    -3 ]
 
 racc_goto_table = [
@@ -127,14 +126,12 @@ Racc_debug_parser = false
 
  # reduce 6 omitted
 
- # reduce 7 omitted
-
-  def _reduce_8( val, _values, result )
+  def _reduce_7( val, _values, result )
  @handler.add_agent(val[0])
    result
   end
 
-  def _reduce_9( val, _values, result )
+  def _reduce_8( val, _values, result )
   @handler.add_rule(val[0])
    result
   end

@@ -2,6 +2,7 @@ module Robots
   class Index
 
     include Scrapper::UriHelper
+    include Scrapper::ArrayHelper
 
     def initialize(builder = Robots::DocumentBuilder.new)
       @documents = {}
@@ -21,8 +22,10 @@ module Robots
       @documents && @documents.has_key?(host)
     end
 
-    def allowed?(opts) # { url : www.costam.cos, agent: Pszemek, empty: true }
+    def allowed?(opts) # { url : www.costam.cos, agent: Pszemek, download: false, empty: true }
       uri = uri_from_url(opts[:url])
+      get(uri) if opts[:download]
+
       if @documents[uri.host].nil?
         opts[:empty]
       else
@@ -31,8 +34,8 @@ module Robots
     end
 
     # Hit the network and parse.
-    def get(url_list)
-      hosts = url_list.reduce([]) { |hosts, u| hosts << uri_from_url(u).host }.uniq
+    def get(*urls)
+      hosts = *urls.reduce([]) { |hosts, u| hosts << uri_from_url(u).host }.uniq
 
       new_documents = get_robots(hosts - @documents.keys) do |host|
         @document_builder.build(host)
@@ -46,10 +49,10 @@ module Robots
     def get_robots(hosts)
       document_body = build_request(hosts)
 
-      (robots[:response] + robots[:request_error]).inject({}) do |hosts, req|
-        body = (req.is_a? RequestError || req.status_code != 200) ? "" : req.body
-        h[req.uri.host] = (block_given? ? yield(body) : body)
-        h
+      (document_body[:response] + document_body[:request_error]).inject({}) do |hosts, req|
+        body = (req.is_a? Scrapper::RequestError || req.status_code != 200) ? "" : req.body
+        hosts[req.uri.host] = (block_given? ? yield(body) : body)
+        hosts
       end
     end
 
@@ -64,5 +67,6 @@ module Robots
       uri = uri_from_url(host)
       uri.host.nil? ? host : uri.host
     end
+
   end
 end

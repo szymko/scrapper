@@ -2,8 +2,8 @@ require 'strscan'
 
 module Robots
   class Tokenizer
-    AGENT = /^(?!<^#)User-agent:.*\n*/
-    RULE = /^(?!<^#)(Allow|Disallow):.*\n*/
+    AGENT = /^(?!<^#)User-agent:[^\n]*\n?/
+    RULE = /^(?!<^#)(Allow|Disallow):[^\n]*\n?/
     COMMENT_OR_BLANK = /\A\s*#.*\n|^\n|#.*$/
 
     def initialize(io)
