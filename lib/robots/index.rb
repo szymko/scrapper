@@ -49,7 +49,7 @@ module Robots
     def get_robots(hosts)
       document_body = build_request(hosts)
 
-      (document_body[:response] + document_body[:request_error]).inject({}) do |hosts, req|
+      (document_body[:response].to_a + document_body[:request_error].to_a).inject({}) do |hosts, req|
         body = (req.is_a? Scrapper::RequestError || req.status_code != 200) ? "" : req.body
         hosts[req.uri.host] = (block_given? ? yield(body) : body)
         hosts

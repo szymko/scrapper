@@ -24,7 +24,7 @@ module Robots
       if @type == :allow
         uri_path =~ regex_rule
       else
-        ! uri_path =~ regex_rule
+        !(uri_path =~ regex_rule)
       end
     end
 
@@ -34,7 +34,7 @@ module Robots
       literal_list = body.split('*')
       literal_list.map! { |el| Regexp.escape(el) }
 
-      preprocessed_body = literal_list.join('[^\/]+')
+      preprocessed_body = literal_list.join('[^\/]*')
       template(preprocessed_body)
     end
 

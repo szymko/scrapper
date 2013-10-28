@@ -6,7 +6,7 @@ class RuleTest < MiniTest::Unit::TestCase
 
   def setup
     @rule1 = "Allow: /wiki/"
-    @rule2 = "Disallow: /"
+    @rule2 = "Disallow: /*home"
   end
 
   def test_it_recognizes_allow_rule_type
@@ -17,6 +17,8 @@ class RuleTest < MiniTest::Unit::TestCase
 
   def test_it_recognizes_disallow_rule_type
     rule = Robots::Rule.new(@rule2)
+    assert rule.allowed?("/about")
+    refute rule.allowed?("/12home")
     refute rule.allowed?("/home")
   end
 end

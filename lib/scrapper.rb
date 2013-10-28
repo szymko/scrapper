@@ -15,4 +15,7 @@ module Scrapper
 
   # scrapping interface
   require_relative './scrapper/crawler'
+
+  # robots
+  require_relative './robots'
 end
