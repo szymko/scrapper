@@ -8,7 +8,17 @@ module Robots
     end
 
     def allowed?(url)
-      @rule_list.reduce(true) { |score, rule| score &= rule.allowed?(url) }
+      flags = { allow: false, disallow: true }
+
+      @rule_list.each do |rule|
+        if rule.type == :allow
+          flags[:allow] |= rule.allowed?(url)
+        else
+          flags[:disallow] &= rule.allowed?(url)
+        end
+      end
+
+      flags[:allow] || flags[:disallow]
     end
 
     def user_agent_similarity(agent_string)
